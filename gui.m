@@ -22,7 +22,7 @@ function varargout = gui(varargin)
 
 % Edit the above text to modify the response to help gui
 
-% Last Modified by GUIDE v2.5 28-Nov-2015 19:05:27
+% Last Modified by GUIDE v2.5 29-Nov-2015 19:21:02
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -84,13 +84,17 @@ function playButton_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 [Y,Fs] = audioread('Faithless - Take The Long Way Home.mp3');
-player = music();
+player = audioplayer(Y,Fs);
+
+appData = struct;
+appData.player = player;
+setappdata(handles.figure1, 'appData', appData);
 play(player);
-plot(Y)
-set(gca,'xtick',[])
-set(gca,'xticklabel',[])
-set(gca,'ytick',[])
-set(gca,'yticklabel',[])
+%plot(Y)
+%set(gca,'xtick',[])
+%set(gca,'xticklabel',[])
+%set(gca,'ytick',[])
+%set(gca,'yticklabel',[])
 
 
 
@@ -99,7 +103,17 @@ function pauseButton_Callback(hObject, eventdata, handles)
 % hObject    handle to pauseButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+appdata = getappdata(handles.figure1, 'appData');
+pause(appdata.player);
 
+
+% --- Executes on button press in resumeButton.
+function resumeButton_Callback(hObject, eventdata, handles)
+% hObject    handle to resumeButton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+appdata = getappdata(handles.figure1, 'appData');
+resume(appdata.player);
 
 
 % --- Executes on button press in stopButton.
@@ -107,8 +121,8 @@ function stopButton_Callback(hObject, eventdata, handles)
 % hObject    handle to stopButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-player = music();
-stop(player);
+appData = getappdata(handles.figure1, 'appData');
+stop(appData.player);
 
 
 % --- Executes on slider movement.
@@ -152,6 +166,7 @@ function listaUtworow_Callback(hObject, eventdata, handles)
 % hObject    handle to listaUtworow (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
 
 
 
@@ -269,8 +284,6 @@ function addFileButton_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 [FileName,PathName] = uigetfile('*.m','Select the MATLAB code file');
 set(handles.listaUtworow,'string',{'test', 'test1', 'test2'});
-
-
 
 
 
