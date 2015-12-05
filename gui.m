@@ -22,7 +22,7 @@ function varargout = gui(varargin)
 
 % Edit the above text to modify the response to help gui
 
-% Last Modified by GUIDE v2.5 05-Dec-2015 17:48:23
+% Last Modified by GUIDE v2.5 05-Dec-2015 22:36:11
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -77,25 +77,30 @@ function playButton_Callback(hObject, eventdata, handles)
 % hObject    handle to playButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-fileName = getappdata(handles.figure1, 'fileName');
-[Y,Fs] = audioread(fileName.fileName);
-player = audioplayer(Y,Fs);
-f=@() updateWin(player, handles);
+startMusic(handles)
 
-appData = struct;
-appData.player = player;
-setappdata(handles.figure1, 'appData', appData);
-play(player);
-%plot(Y)
-%set(gca,'xtick',[])
-%set(gca,'xticklabel',[])
-%set(gca,'ytick',[])
-%set(gca,'yticklabel',[])
+function startMusic(handles)
+    fileName = getappdata(handles.figure1, 'fileName');
+    set(handles.name, 'string', {fileName.fileName});
+    [Y,Fs] = audioread(fileName.fileName);
+    player = audioplayer(Y,Fs);
+    f=@() updateWin();
+    appData = struct;
+    appData.player = player;
+    setappdata(handles.figure1, 'appData', appData);
+    play(player);
+    plot(Y)
+    set(gca,'xtick',[])
+    set(gca,'xticklabel',[])
+    set(gca,'ytick',[])
+    set(gca,'yticklabel',[])
 
-function updateWin(player, handles)
-    c = get(player, 'CurrentSample');
-    t = get(player, 'TotalSamples');
-    set(handles.czas, 'value', c/t);
+function updateWin()
+    appdata = getappdata(handles.figure1, 'appData');
+    player = appdata.player;
+    c = get(player, 'CurrentSample')
+    t = get(player, 'TotalSamples')
+    set(handles.czas, 'value', c/t)
 
 % --- Executes on button press in pauseButton.
 function pauseButton_Callback(hObject, eventdata, handles)
@@ -155,6 +160,7 @@ currentValue = get(handles.listaUtworow,'value');
 allNames = get(handles.listaUtworow,'string');
 selectValue(currentValue + 1, allNames, handles)
 set(handles.listaUtworow,'value', currentValue + 1);
+startMusic(handles)
 
 
 % --- Executes on button press in prevButton.
@@ -166,6 +172,7 @@ currentValue = get(handles.listaUtworow,'value');
 allNames = get(handles.listaUtworow,'string');
 selectValue(currentValue - 1, allNames, handles)
 set(handles.listaUtworow,'value', currentValue - 1);
+startMusic(handles)
 
 % --- Executes on selection change in listaUtworow.
 function listaUtworow_Callback(hObject, eventdata, handles)
@@ -237,6 +244,7 @@ function volume_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'Value') returns position of slider
 %        get(hObject,'Min') and get(hObject,'Max') to determine range of slider
+
 
 
 % --- Executes during object creation, after setting all properties.
@@ -324,3 +332,53 @@ function addFolderButton_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 folder_name = uigetdir
+
+
+% --- Executes during object creation, after setting all properties.
+function name_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to name (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+
+% --- Executes on button press in Exit.
+function Exit_Callback(hObject, eventdata, handles)
+% hObject    handle to Exit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --- Executes on button press in radiobutton2.
+function radiobutton2_Callback(hObject, eventdata, handles)
+% hObject    handle to radiobutton2 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of radiobutton2
+
+
+% --- Executes on button press in radiobutton3.
+function radiobutton3_Callback(hObject, eventdata, handles)
+% hObject    handle to radiobutton3 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of radiobutton3
+
+
+% --- Executes on button press in radiobutton4.
+function radiobutton4_Callback(hObject, eventdata, handles)
+% hObject    handle to radiobutton4 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of radiobutton4
+
+
+% --- Executes on button press in radiobutton5.
+function radiobutton5_Callback(hObject, eventdata, handles)
+% hObject    handle to radiobutton5 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of radiobutton5
