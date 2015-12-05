@@ -22,7 +22,7 @@ function varargout = gui(varargin)
 
 % Edit the above text to modify the response to help gui
 
-% Last Modified by GUIDE v2.5 29-Nov-2015 19:21:02
+% Last Modified by GUIDE v2.5 05-Dec-2015 17:48:23
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -72,19 +72,15 @@ function varargout = gui_OutputFcn(hObject, eventdata, handles)
 % Get default command line output from handles structure
 varargout{1} = handles.output;
 
-function result = music()
-    [Y,Fs] = audioread('Faithless - Take The Long Way Home.mp3');
-    global player;
-    player = audioplayer(Y,Fs);
-    result = player;
-
 % --- Executes on button press in playButton.
 function playButton_Callback(hObject, eventdata, handles)
 % hObject    handle to playButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-[Y,Fs] = audioread('Faithless - Take The Long Way Home.mp3');
+fileName = getappdata(handles.figure1, 'fileName');
+[Y,Fs] = audioread(fileName.fileName);
 player = audioplayer(Y,Fs);
+f=@() updateWin(player, handles);
 
 appData = struct;
 appData.player = player;
@@ -96,7 +92,10 @@ play(player);
 %set(gca,'ytick',[])
 %set(gca,'yticklabel',[])
 
-
+function updateWin(player, handles)
+    c = get(player, 'CurrentSample');
+    t = get(player, 'TotalSamples');
+    set(handles.czas, 'value', c/t);
 
 % --- Executes on button press in pauseButton.
 function pauseButton_Callback(hObject, eventdata, handles)
@@ -152,6 +151,10 @@ function nextButton_Callback(hObject, eventdata, handles)
 % hObject    handle to nextButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+currentValue = get(handles.listaUtworow,'value');
+allNames = get(handles.listaUtworow,'string');
+selectValue(currentValue + 1, allNames, handles)
+set(handles.listaUtworow,'value', currentValue + 1);
 
 
 % --- Executes on button press in prevButton.
@@ -159,13 +162,30 @@ function prevButton_Callback(hObject, eventdata, handles)
 % hObject    handle to prevButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
+currentValue = get(handles.listaUtworow,'value');
+allNames = get(handles.listaUtworow,'string');
+selectValue(currentValue - 1, allNames, handles)
+set(handles.listaUtworow,'value', currentValue - 1);
 
 % --- Executes on selection change in listaUtworow.
 function listaUtworow_Callback(hObject, eventdata, handles)
 % hObject    handle to listaUtworow (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+selected_item=get(hObject,'value');
+allNames = get(hObject, 'string');
+selectValue(selected_item, allNames, handles);
+
+
+function selectValue(selected_item, allNames, handles)
+    [m, n] = size(allNames);
+    if n ~= 0
+        name = allNames{selected_item};
+        fileName = struct;
+        fileName.fileName = name;
+        setappdata(handles.figure1, 'fileName', fileName);
+    end
+    
 
 
 
@@ -282,8 +302,10 @@ function addFileButton_Callback(hObject, eventdata, handles)
 % hObject    handle to addFileButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-[FileName,PathName] = uigetfile('*.m','Select the MATLAB code file');
-set(handles.listaUtworow,'string',{'test', 'test1', 'test2'});
+[FileName,PathName] = uigetfile('*.mp3','Lista utworow');
+k = get(handles.listaUtworow, 'string');
+l = [k; {FileName}];
+set(handles.listaUtworow,'string', l);
 
 
 
@@ -292,7 +314,7 @@ function clearAllButton_Callback(hObject, eventdata, handles)
 % hObject    handle to clearAllButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-set(handles.listaUtworow,'string',' ');
+set(handles.listaUtworow,'string',{});
 
 
 
