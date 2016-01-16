@@ -22,7 +22,7 @@ function varargout = gui(varargin)
 
 % Edit the above text to modify the response to help gui
 
-% Last Modified by GUIDE v2.5 16-Jan-2016 17:12:13
+% Last Modified by GUIDE v2.5 16-Jan-2016 17:46:13
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -54,7 +54,7 @@ function gui_OpeningFcn(hObject, eventdata, handles, varargin)
 
 % Choose default command line output for gui
 handles.output = hObject;
-
+set(handles.figure1, 'Color', [0 0 0]);
 % Update handles structure
 guidata(hObject, handles);
 
@@ -80,6 +80,9 @@ function playButton_Callback(hObject, eventdata, handles)
 startMusic(handles)
 
 function startMusic(handles)
+    set(handles.filtr2,'value', 0);
+    set(handles.filtr1,'value', 0);
+    set(handles.clearFilter,'value', 1);
     setappdata(handles.figure1, 'counter', 2);
     fileName = getappdata(handles.figure1, 'fileName');
     set(handles.name, 'string', {fileName.fileName});
@@ -106,13 +109,13 @@ function updateWin(obj, event, handles, Y)
     sr = get(player, 'SampleRate');
     value = strcat(num2str(round(c/sr)), ' / ' , num2str(round(t/sr)));
     set(handles.czas, 'string', value);
-    plot(Y);
-    i = i + 1;
-    set(gca,'xtick',[]);
-    set(gca,'xticklabel',[]);
-    set(gca,'ytick',[]);
-    set(gca,'yticklabel',[]);
-    setappdata(handles.figure1, 'counter', i);
+    %plot(Y);
+    %i = i + 1;
+    %set(gca,'xtick',[]);
+    %set(gca,'xticklabel',[]);
+    %set(gca,'ytick',[]);
+    %set(gca,'yticklabel',[]);
+    %setappdata(handles.figure1, 'counter', i);
     
 
 % --- Executes on button press in pauseButton.
@@ -370,7 +373,7 @@ function filtr1_Callback(hObject, eventdata, handles)
 
 % Hint: get(hObject,'Value') returns toggle state of filtr1
 set(handles.filtr2,'value', 0);
-set(handles. clearFilter,'value', 0);
+set(handles.clearFilter,'value', 0);
 appData = getappdata(handles.figure1, 'appData');
 sr = getappdata(handles.figure1, 'SampleRate');
 set(appData.player, 'SampleRate', sr*2);
@@ -416,7 +419,7 @@ function clearFilter_Callback(hObject, eventdata, handles)
 
 % Hint: get(hObject,'Value') returns toggle state of clearFilter
 set(handles.filtr2,'value', 0);
-set(handles. filtr1,'value', 0);
+set(handles.filtr1,'value', 0);
 appData = getappdata(handles.figure1, 'appData');
 sr = getappdata(handles.figure1, 'SampleRate');
 set(appData.player, 'SampleRate', sr);
@@ -428,4 +431,76 @@ function playButton_CreateFcn(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 img = imread('icons/play.png');
+set(hObject, 'CData', img);
+
+
+% --- Executes during object creation, after setting all properties.
+function nextButton_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to nextButton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+img = imread('icons/next.png');
+set(hObject, 'CData', img);
+
+
+% --- Executes during object creation, after setting all properties.
+function prevButton_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to prevButton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+img = imread('icons/previous.png');
+set(hObject, 'CData', img);
+
+
+% --- Executes during object creation, after setting all properties.
+function resumeButton_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to resumeButton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+img = imread('icons/resume.png');
+set(hObject, 'CData', img);
+
+
+% --- Executes during object creation, after setting all properties.
+function pauseButton_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to pauseButton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+img = imread('icons/pause.png');
+set(hObject, 'CData', img);
+
+
+% --- Executes during object creation, after setting all properties.
+function stopButton_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to stopButton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+img = imread('icons/stop.png');
+set(hObject, 'CData', img);
+
+
+% --- Executes during object creation, after setting all properties.
+function addFileButton_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to addFileButton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+img = imread('icons/addFile.png');
+set(hObject, 'CData', img);
+
+
+% --- Executes during object creation, after setting all properties.
+function clearAllButton_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to clearAllButton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+img = imread('icons/clearall.png');
+set(hObject, 'CData', img);
+
+
+% --- Executes during object creation, after setting all properties.
+function Exit_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to Exit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+img = imread('icons/exit.png');
 set(hObject, 'CData', img);
