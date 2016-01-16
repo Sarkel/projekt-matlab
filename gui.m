@@ -22,7 +22,7 @@ function varargout = gui(varargin)
 
 % Edit the above text to modify the response to help gui
 
-% Last Modified by GUIDE v2.5 05-Dec-2015 22:36:11
+% Last Modified by GUIDE v2.5 16-Jan-2016 17:12:13
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -80,27 +80,40 @@ function playButton_Callback(hObject, eventdata, handles)
 startMusic(handles)
 
 function startMusic(handles)
+    setappdata(handles.figure1, 'counter', 2);
     fileName = getappdata(handles.figure1, 'fileName');
     set(handles.name, 'string', {fileName.fileName});
     [Y,Fs] = audioread(fileName.fileName);
-    player = audioplayer(Y,Fs);
-    f=@() updateWin();
+    player = audioplayer(Y, Fs);
+    sr = get(player, 'SampleRate');
+    f={@updateWin, handles, Y};
     appData = struct;
     appData.player = player;
     setappdata(handles.figure1, 'appData', appData);
+    setappdata(handles.figure1, 'SampleRate', sr);
+    set(player, 'TimerPeriod', 1);
+    set(player, 'TimerFcn', f);
     play(player);
-    plot(Y)
-    set(gca,'xtick',[])
-    set(gca,'xticklabel',[])
-    set(gca,'ytick',[])
-    set(gca,'yticklabel',[])
+    
 
-function updateWin()
-    appdata = getappdata(handles.figure1, 'appData');
-    player = appdata.player;
-    c = get(player, 'CurrentSample')
-    t = get(player, 'TotalSamples')
-    set(handles.czas, 'value', c/t)
+function updateWin(obj, event, handles, Y)
+    %appdata = getappdata(handles.figure1, 'appData');
+    %player = appdata.player;
+    player = obj;
+    i = getappdata(handles.figure1, 'counter');
+    c = get(player, 'CurrentSample');
+    t = get(player, 'TotalSamples');
+    sr = get(player, 'SampleRate');
+    value = strcat(num2str(round(c/sr)), ' / ' , num2str(round(t/sr)));
+    set(handles.czas, 'string', value);
+    plot(Y);
+    i = i + 1;
+    set(gca,'xtick',[]);
+    set(gca,'xticklabel',[]);
+    set(gca,'ytick',[]);
+    set(gca,'yticklabel',[]);
+    setappdata(handles.figure1, 'counter', i);
+    
 
 % --- Executes on button press in pauseButton.
 function pauseButton_Callback(hObject, eventdata, handles)
@@ -346,24 +359,35 @@ function Exit_Callback(hObject, eventdata, handles)
 % hObject    handle to Exit (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+close('all');
 
 
-% --- Executes on button press in radiobutton2.
-function radiobutton2_Callback(hObject, eventdata, handles)
-% hObject    handle to radiobutton2 (see GCBO)
+% --- Executes on button press in filtr1.
+function filtr1_Callback(hObject, eventdata, handles)
+% hObject    handle to filtr1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hint: get(hObject,'Value') returns toggle state of radiobutton2
+% Hint: get(hObject,'Value') returns toggle state of filtr1
+set(handles.filtr2,'value', 0);
+set(handles. clearFilter,'value', 0);
+appData = getappdata(handles.figure1, 'appData');
+sr = getappdata(handles.figure1, 'SampleRate');
+set(appData.player, 'SampleRate', sr*2);
 
 
-% --- Executes on button press in radiobutton3.
-function radiobutton3_Callback(hObject, eventdata, handles)
-% hObject    handle to radiobutton3 (see GCBO)
+% --- Executes on button press in filtr2.
+function filtr2_Callback(hObject, eventdata, handles)
+% hObject    handle to filtr2 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hint: get(hObject,'Value') returns toggle state of radiobutton3
+% Hint: get(hObject,'Value') returns toggle state of filtr2
+set(handles.filtr1,'value', 0);
+set(handles. clearFilter,'value', 0);
+appData = getappdata(handles.figure1, 'appData');
+sr = getappdata(handles.figure1, 'SampleRate');
+set(appData.player, 'SampleRate', sr/2);
 
 
 % --- Executes on button press in radiobutton4.
@@ -382,3 +406,26 @@ function radiobutton5_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of radiobutton5
+
+
+% --- Executes on button press in clearFilter.
+function clearFilter_Callback(hObject, eventdata, handles)
+% hObject    handle to clearFilter (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of clearFilter
+set(handles.filtr2,'value', 0);
+set(handles. filtr1,'value', 0);
+appData = getappdata(handles.figure1, 'appData');
+sr = getappdata(handles.figure1, 'SampleRate');
+set(appData.player, 'SampleRate', sr);
+
+
+% --- Executes during object creation, after setting all properties.
+function playButton_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to playButton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+img = imread('icons/play.png');
+set(hObject, 'CData', img);
