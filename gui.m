@@ -22,7 +22,7 @@ function varargout = gui(varargin)
 
 % Edit the above text to modify the response to help gui
 
-% Last Modified by GUIDE v2.5 16-Jan-2016 17:46:13
+% Last Modified by GUIDE v2.5 19-Jan-2016 17:40:59
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -87,6 +87,8 @@ function startMusic(handles)
     fileName = getappdata(handles.figure1, 'fileName');
     set(handles.name, 'string', {fileName.fileName});
     [Y,Fs] = audioread(fileName.fileName);
+    setappdata(handles.figure1, 'Y', Y);
+    setappdata(handles.figure1, 'Fs', Fs);
     player = audioplayer(Y, Fs);
     sr = get(player, 'SampleRate');
     f={@updateWin, handles, Y};
@@ -97,6 +99,7 @@ function startMusic(handles)
     set(player, 'TimerPeriod', 1);
     set(player, 'TimerFcn', f);
     play(player);
+    curve(handles);
     
 
 function updateWin(obj, event, handles, Y)
@@ -109,6 +112,7 @@ function updateWin(obj, event, handles, Y)
     sr = get(player, 'SampleRate');
     value = strcat(num2str(round(c/sr)), ' / ' , num2str(round(t/sr)));
     set(handles.czas, 'string', value);
+    setappdata(handles.figure1, 'time', round(t/sr));
     %plot(Y);
     %i = i + 1;
     %set(gca,'xtick',[]);
@@ -117,7 +121,25 @@ function updateWin(obj, event, handles, Y)
     %set(gca,'yticklabel',[]);
     %setappdata(handles.figure1, 'counter', i);
     
-
+    function curve(handles)
+        Y = getappdata(handles.figure1, 'Y');
+        Fs = getappdata(handles.figure1, 'Fs');
+        %t = getappdata(handles.figure1, 'time');
+        t = 0:1/Fs:(length(Y)-1)/Fs;
+        appDate = getappdata(handles.figure1, 'appData');
+        player = appDate.player;
+        while strcmp(get(player, 'Running'), 'on')
+            pause(500/Fs);
+            cs = get(player, 'CurrentSample');
+            if cs ~= 1
+                plot(t(cs-500:cs), Y(cs-500:cs));
+                set(handles.chart, 'XTick', []);
+                set(handles.chart, 'YTick', []);
+                drawnow;
+            end
+        end
+        
+    
 % --- Executes on button press in pauseButton.
 function pauseButton_Callback(hObject, eventdata, handles)
 % hObject    handle to pauseButton (see GCBO)
@@ -134,6 +156,7 @@ function resumeButton_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 appdata = getappdata(handles.figure1, 'appData');
 resume(appdata.player);
+curve(handles);
 
 
 % --- Executes on button press in stopButton.
@@ -172,6 +195,8 @@ function nextButton_Callback(hObject, eventdata, handles)
 % hObject    handle to nextButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+appData = getappdata(handles.figure1, 'appData');
+stop(appData.player);
 currentValue = get(handles.listaUtworow,'value');
 allNames = get(handles.listaUtworow,'string');
 selectValue(currentValue + 1, allNames, handles)
@@ -184,6 +209,8 @@ function prevButton_Callback(hObject, eventdata, handles)
 % hObject    handle to prevButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+appData = getappdata(handles.figure1, 'appData');
+stop(appData.player);
 currentValue = get(handles.listaUtworow,'value');
 allNames = get(handles.listaUtworow,'string');
 selectValue(currentValue - 1, allNames, handles)
@@ -362,6 +389,8 @@ function Exit_Callback(hObject, eventdata, handles)
 % hObject    handle to Exit (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+appData = getappdata(handles.figure1, 'appData');
+stop(appData.player);
 close('all');
 
 
@@ -504,3 +533,12 @@ function Exit_CreateFcn(hObject, eventdata, handles)
 % handles    empty - handles not created until after all CreateFcns called
 img = imread('icons/exit.png');
 set(hObject, 'CData', img);
+
+
+% --- Executes during object creation, after setting all properties.
+function chart_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to chart (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: place code in OpeningFcn to populate chart
