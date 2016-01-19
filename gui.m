@@ -103,8 +103,6 @@ function startMusic(handles)
     
 
 function updateWin(obj, event, handles, Y)
-    %appdata = getappdata(handles.figure1, 'appData');
-    %player = appdata.player;
     player = obj;
     i = getappdata(handles.figure1, 'counter');
     c = get(player, 'CurrentSample');
@@ -113,18 +111,10 @@ function updateWin(obj, event, handles, Y)
     value = strcat(num2str(round(c/sr)), ' / ' , num2str(round(t/sr)));
     set(handles.czas, 'string', value);
     setappdata(handles.figure1, 'time', round(t/sr));
-    %plot(Y);
-    %i = i + 1;
-    %set(gca,'xtick',[]);
-    %set(gca,'xticklabel',[]);
-    %set(gca,'ytick',[]);
-    %set(gca,'yticklabel',[]);
-    %setappdata(handles.figure1, 'counter', i);
     
     function curve(handles)
         Y = getappdata(handles.figure1, 'Y');
         Fs = getappdata(handles.figure1, 'Fs');
-        %t = getappdata(handles.figure1, 'time');
         t = 0:1/Fs:(length(Y)-1)/Fs;
         appDate = getappdata(handles.figure1, 'appData');
         player = appDate.player;
@@ -166,28 +156,6 @@ function stopButton_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 appData = getappdata(handles.figure1, 'appData');
 stop(appData.player);
-
-
-% --- Executes on slider movement.
-function dlugoscUtworu_Callback(hObject, eventdata, handles)
-% hObject    handle to dlugoscUtworu (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'Value') returns position of slider
-%        get(hObject,'Min') and get(hObject,'Max') to determine range of slider
-
-
-% --- Executes during object creation, after setting all properties.
-function dlugoscUtworu_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to dlugoscUtworu (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: slider controls usually have a light gray background.
-if isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor',[.9 .9 .9]);
-end
 
 
 % --- Executes on button press in nextButton.
@@ -420,24 +388,6 @@ set(handles. clearFilter,'value', 0);
 appData = getappdata(handles.figure1, 'appData');
 sr = getappdata(handles.figure1, 'SampleRate');
 set(appData.player, 'SampleRate', sr/2);
-
-
-% --- Executes on button press in radiobutton4.
-function radiobutton4_Callback(hObject, eventdata, handles)
-% hObject    handle to radiobutton4 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of radiobutton4
-
-
-% --- Executes on button press in radiobutton5.
-function radiobutton5_Callback(hObject, eventdata, handles)
-% hObject    handle to radiobutton5 (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of radiobutton5
 
 
 % --- Executes on button press in clearFilter.
